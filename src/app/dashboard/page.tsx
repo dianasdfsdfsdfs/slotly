@@ -134,28 +134,39 @@ export default async function DashboardOverviewPage() {
       </div>
 
       <div className="card p-6">
-        <h2 className="font-medium">Get set up</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Finish these steps to start taking bookings.
-        </p>
-        <ul className="mt-4 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-medium">Get set up</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Finish these steps to start taking bookings.
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
+            {steps.filter((s) => s.done).length} / {steps.length} done
+          </span>
+        </div>
+
+        <ul className="mt-5 space-y-2.5">
           {steps.map((step) => {
             const Icon = step.icon
+            const soon = step.href === null
             const inner = (
               <div
                 className={cn(
-                  "flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition-colors",
-                  step.href &&
-                    !step.done &&
-                    "group-hover:border-emerald-500/30 group-hover:bg-emerald-500/[0.04]"
+                  "flex items-center gap-4 rounded-xl border p-3.5 transition-all",
+                  step.done
+                    ? "border-emerald-500/25 bg-emerald-500/[0.07]"
+                    : soon
+                      ? "border-white/10 bg-white/[0.03]"
+                      : "border-white/10 bg-white/[0.03] group-hover:-translate-y-px group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06]"
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-9 shrink-0 items-center justify-center rounded-lg",
+                    "flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors",
                     step.done
                       ? "bg-emerald-500 text-black"
-                      : "bg-white/5 text-muted-foreground"
+                      : "bg-emerald-500/10 text-emerald-300"
                   )}
                 >
                   {step.done ? (
@@ -175,8 +186,16 @@ export default async function DashboardOverviewPage() {
                   </p>
                   <p className="text-xs text-muted-foreground">{step.hint}</p>
                 </div>
-                {step.href && !step.done && (
-                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-emerald-300" />
+                {step.done ? (
+                  <span className="text-xs font-medium text-emerald-300">
+                    Done
+                  </span>
+                ) : soon ? (
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
+                    Soon
+                  </span>
+                ) : (
+                  <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-300" />
                 )}
               </div>
             )
@@ -188,9 +207,7 @@ export default async function DashboardOverviewPage() {
                 </Link>
               </li>
             ) : (
-              <li key={step.label} className="opacity-70">
-                {inner}
-              </li>
+              <li key={step.label}>{inner}</li>
             )
           })}
         </ul>
