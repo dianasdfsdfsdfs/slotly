@@ -97,7 +97,11 @@ export default async function DashboardOverviewPage() {
               href={stat.href}
               className="group card card-interactive relative overflow-hidden p-5"
             >
-              <div className="flex items-center justify-between">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -top-8 -right-8 size-28 rounded-full bg-emerald-500/10 blur-2xl transition-all group-hover:bg-emerald-500/20"
+              />
+              <div className="relative flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
                   {stat.label}
                 </span>
@@ -128,7 +132,7 @@ export default async function DashboardOverviewPage() {
             const inner = (
               <div
                 className={cn(
-                  "flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 transition-colors",
+                  "flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition-colors",
                   step.href &&
                     !step.done &&
                     "group-hover:border-emerald-500/30 group-hover:bg-emerald-500/[0.04]"
