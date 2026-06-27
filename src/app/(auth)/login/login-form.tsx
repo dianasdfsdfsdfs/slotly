@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -14,7 +14,6 @@ import { signInSchema, type SignInInput } from "@/lib/validations/auth"
 import { getPostLoginPath } from "@/server/actions/auth"
 
 export function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl")
   const [isPending, startTransition] = useTransition()
@@ -40,8 +39,8 @@ export function LoginForm() {
       }
 
       toast.success("Welcome back!")
-      router.push(callbackUrl ?? (await getPostLoginPath()))
-      router.refresh()
+      // Full navigation so every server component sees the new session.
+      window.location.assign(callbackUrl ?? (await getPostLoginPath()))
     })
   }
 
