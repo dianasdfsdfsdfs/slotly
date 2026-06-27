@@ -51,7 +51,9 @@ export function RegisterForm() {
 
       toast.success("Welcome to Slotly!")
       // Full navigation so every server component sees the new session.
-      window.location.assign(callbackUrl ?? "/account")
+      // No callbackUrl => signed up from the marketing site (business intent)
+      // => go to onboarding. Booking flow passes callbackUrl and returns there.
+      window.location.assign(callbackUrl ?? "/onboarding")
     })
   }
 
