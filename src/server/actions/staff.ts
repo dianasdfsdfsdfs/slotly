@@ -1,9 +1,14 @@
 "use server"
 
+import { TZDate } from "@date-fns/tz"
 import { revalidatePath } from "next/cache"
 
 import { PLAN_LIMITS } from "@/lib/constants"
-import { staffFormSchema, workingHoursSchema } from "@/lib/validations/staff"
+import {
+  staffFormSchema,
+  timeOffSchema,
+  workingHoursSchema,
+} from "@/lib/validations/staff"
 import { db } from "@/server/db"
 import { getOwnerContext } from "@/server/tenant"
 
@@ -156,5 +161,61 @@ export async function setWorkingHours(
   ])
 
   revalidatePath(`/dashboard/staff/${staffId}`)
+  return { success: true }
+}
+
+// Interpret a datetime-local string ("YYYY-MM-DDTHH:MM") as tenant-local time.
+function parseLocalDateTime(value: string, timeZone: string): Date | null {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
+  if (!match) return null
+  const [, y, mo, d, h, mi] = match
+  return new Date(new TZDate(+y, +mo - 1, +d, +h, +mi, 0, timeZone).getTime())
+}
+
+export async function addTimeOff(
+  staffId: string,
+  input: unknown
+): Promise<ActionResult> {
+  const ctx = await getOwnerContext()
+  if (!ctx) return NOT_AUTHORIZED
+
+  const staff = await db.staff.findFirst({
+    where: { id: staffId, tenantId: ctx.tenant.id },
+    select: { id: true },
+  })
+  if (!staff) return { success: false, error: "Staff member not found." }
+
+  const parsed = timeOffSchema.safeParse(input)
+  if (!parsed.success) {
+    return { success: false, error: "Please check the dates." }
+  }
+
+  const startAt = parseLocalDateTime(parsed.data.startAt, ctx.tenant.timezone)
+  const endAt = parseLocalDateTime(parsed.data.endAt, ctx.tenant.timezone)
+  if (!startAt || !endAt || endAt <= startAt) {
+    return { success: false, error: "End time must be after start time." }
+  }
+
+  await db.timeOff.create({
+    data: { staffId, startAt, endAt, reason: parsed.data.reason || null },
+  })
+
+  revalidatePath(`/dashboard/staff/${staffId}`)
+  return { success: true }
+}
+
+export async function deleteTimeOff(id: string): Promise<ActionResult> {
+  const ctx = await getOwnerContext()
+  if (!ctx) return NOT_AUTHORIZED
+
+  const existing = await db.timeOff.findFirst({
+    where: { id, staff: { tenantId: ctx.tenant.id } },
+    select: { id: true, staffId: true },
+  })
+  if (!existing) return { success: false, error: "Time off not found." }
+
+  await db.timeOff.delete({ where: { id } })
+
+  revalidatePath(`/dashboard/staff/${existing.staffId}`)
   return { success: true }
 }

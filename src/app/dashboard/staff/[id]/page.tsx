@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 
 import { StaffForm } from "@/components/dashboard/staff/staff-form"
 import { StaffServices } from "@/components/dashboard/staff/staff-services"
+import { TimeOffManager } from "@/components/dashboard/staff/time-off-manager"
 import { WorkingHoursEditor } from "@/components/dashboard/staff/working-hours-editor"
 import { db } from "@/server/db"
 import { getOwnerDashboardContext } from "@/server/tenant"
@@ -24,6 +25,7 @@ export default async function StaffDetailPage({
     include: {
       services: { select: { serviceId: true } },
       workingHours: true,
+      timeOff: { orderBy: { startAt: "asc" } },
     },
   })
   if (!staff) notFound()
@@ -80,6 +82,25 @@ export default async function StaffDetailPage({
             weekday: wh.weekday,
             startMinutes: wh.startMinutes,
             endMinutes: wh.endMinutes,
+          }))}
+        />
+      </section>
+
+      <section className="card space-y-4 p-6">
+        <div>
+          <h2 className="font-medium">Time off</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Block out vacations or breaks. These times won&apos;t be bookable.
+          </p>
+        </div>
+        <TimeOffManager
+          staffId={staff.id}
+          timeZone={tenant.timezone}
+          items={staff.timeOff.map((t) => ({
+            id: t.id,
+            startAt: t.startAt.toISOString(),
+            endAt: t.endAt.toISOString(),
+            reason: t.reason,
           }))}
         />
       </section>

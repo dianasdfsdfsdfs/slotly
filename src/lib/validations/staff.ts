@@ -28,3 +28,11 @@ export const workingHoursSchema = z
   .max(7)
 
 export type WorkingHoursInput = z.infer<typeof workingHoursSchema>
+
+export const timeOffSchema = z.object({
+  startAt: z.string().min(1, "Pick a start time"),
+  endAt: z.string().min(1, "Pick an end time"),
+  reason: z.string().trim().max(200).optional(),
+})
+
+export type TimeOffInput = z.infer<typeof timeOffSchema>
