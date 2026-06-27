@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -40,7 +41,7 @@ export function DashboardTopbar({
     .toUpperCase()
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border px-4">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/60 px-4 backdrop-blur">
       <div className="flex items-center gap-1">
         <MobileNav role={role} />
 
@@ -54,23 +55,25 @@ export function DashboardTopbar({
             <ChevronsUpDown className="size-3.5 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Businesses</DropdownMenuLabel>
-            {tenants.map((t) => (
-              <DropdownMenuItem
-                key={t.id}
-                disabled={isPending}
-                onClick={() =>
-                  startTransition(() => {
-                    if (t.id !== tenantId) void setActiveTenant(t.id)
-                  })
-                }
-              >
-                <span className="truncate">{t.name}</span>
-                {t.id === tenantId && (
-                  <Check className="ml-auto size-4 text-emerald-400" />
-                )}
-              </DropdownMenuItem>
-            ))}
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Businesses</DropdownMenuLabel>
+              {tenants.map((t) => (
+                <DropdownMenuItem
+                  key={t.id}
+                  disabled={isPending}
+                  onClick={() =>
+                    startTransition(() => {
+                      if (t.id !== tenantId) void setActiveTenant(t.id)
+                    })
+                  }
+                >
+                  <span className="truncate">{t.name}</span>
+                  {t.id === tenantId && (
+                    <Check className="ml-auto size-4 text-emerald-400" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -85,16 +88,18 @@ export function DashboardTopbar({
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="flex flex-col">
-            <span className="truncate font-medium text-foreground">
-              {user.name ?? "Account"}
-            </span>
-            {user.email && (
-              <span className="truncate text-xs font-normal text-muted-foreground">
-                {user.email}
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex flex-col">
+              <span className="truncate font-medium text-foreground">
+                {user.name ?? "Account"}
               </span>
-            )}
-          </DropdownMenuLabel>
+              {user.email && (
+                <span className="truncate text-xs font-normal text-muted-foreground">
+                  {user.email}
+                </span>
+              )}
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
