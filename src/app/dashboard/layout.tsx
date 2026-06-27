@@ -15,6 +15,7 @@ export default async function DashboardLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopbar
           user={{ name: user.name, email: user.email }}
+          role={role}
           tenantId={tenant.id}
           tenantName={tenant.name}
           tenants={memberships.map((m) => ({

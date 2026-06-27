@@ -3,6 +3,7 @@
 import { Building2, Check, ChevronsUpDown, LogOut } from "lucide-react"
 import { useTransition } from "react"
 
+import { MobileNav } from "@/components/dashboard/mobile-nav"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { Role } from "@/generated/prisma/client"
 import { signOutAction } from "@/server/actions/auth"
 import { setActiveTenant } from "@/server/actions/tenant"
 
@@ -19,11 +21,13 @@ type TenantOption = { id: string; name: string }
 
 export function DashboardTopbar({
   user,
+  role,
   tenantId,
   tenantName,
   tenants,
 }: {
   user: { name?: string | null; email?: string | null }
+  role: Role
   tenantId: string
   tenantName: string
   tenants: TenantOption[]
@@ -37,35 +41,39 @@ export function DashboardTopbar({
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border px-4">
-      {/* Tenant switcher */}
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none hover:bg-white/5">
-          <Building2 className="size-4 text-emerald-400" />
-          <span className="max-w-[180px] truncate font-medium">
-            {tenantName}
-          </span>
-          <ChevronsUpDown className="size-3.5 text-muted-foreground" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuLabel>Businesses</DropdownMenuLabel>
-          {tenants.map((t) => (
-            <DropdownMenuItem
-              key={t.id}
-              disabled={isPending}
-              onClick={() =>
-                startTransition(() => {
-                  if (t.id !== tenantId) void setActiveTenant(t.id)
-                })
-              }
-            >
-              <span className="truncate">{t.name}</span>
-              {t.id === tenantId && (
-                <Check className="ml-auto size-4 text-emerald-400" />
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-1">
+        <MobileNav role={role} />
+
+        {/* Tenant switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none hover:bg-white/5">
+            <Building2 className="size-4 text-emerald-400" />
+            <span className="max-w-[180px] truncate font-medium">
+              {tenantName}
+            </span>
+            <ChevronsUpDown className="size-3.5 text-muted-foreground" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel>Businesses</DropdownMenuLabel>
+            {tenants.map((t) => (
+              <DropdownMenuItem
+                key={t.id}
+                disabled={isPending}
+                onClick={() =>
+                  startTransition(() => {
+                    if (t.id !== tenantId) void setActiveTenant(t.id)
+                  })
+                }
+              >
+                <span className="truncate">{t.name}</span>
+                {t.id === tenantId && (
+                  <Check className="ml-auto size-4 text-emerald-400" />
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       {/* User menu */}
       <DropdownMenu>

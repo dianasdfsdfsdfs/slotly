@@ -1,57 +1,19 @@
 "use client"
 
-import {
-  CalendarDays,
-  ClipboardList,
-  CreditCard,
-  LayoutDashboard,
-  Scissors,
-  Settings,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import {
+  isNavItemActive,
+  visibleNavItems,
+} from "@/components/dashboard/nav-items"
 import type { Role } from "@/generated/prisma/client"
 import { siteConfig } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
-type NavItem = {
-  href: string
-  label: string
-  icon: LucideIcon
-  ownerOnly?: boolean
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/dashboard/bookings", label: "Bookings", icon: ClipboardList },
-  {
-    href: "/dashboard/services",
-    label: "Services",
-    icon: Scissors,
-    ownerOnly: true,
-  },
-  { href: "/dashboard/staff", label: "Staff", icon: Users, ownerOnly: true },
-  {
-    href: "/dashboard/settings",
-    label: "Settings",
-    icon: Settings,
-    ownerOnly: true,
-  },
-  {
-    href: "/dashboard/billing",
-    label: "Billing",
-    icon: CreditCard,
-    ownerOnly: true,
-  },
-]
-
 export function DashboardSidebar({ role }: { role: Role }) {
   const pathname = usePathname()
-  const items = NAV_ITEMS.filter((item) => !item.ownerOnly || role === "OWNER")
+  const items = visibleNavItems(role)
 
   return (
     <aside className="hidden w-60 shrink-0 border-r border-sidebar-border bg-sidebar md:flex md:flex-col">
@@ -64,10 +26,7 @@ export function DashboardSidebar({ role }: { role: Role }) {
       </Link>
       <nav className="flex-1 space-y-1 px-3 py-2">
         {items.map((item) => {
-          const active =
-            item.href === "/dashboard"
-              ? pathname === item.href
-              : pathname.startsWith(item.href)
+          const active = isNavItemActive(item.href, pathname)
           const Icon = item.icon
           return (
             <Link
