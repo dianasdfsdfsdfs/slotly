@@ -20,7 +20,7 @@ export default async function AccountSettingsPage() {
   if (!user) redirect("/login")
 
   return (
-    <div className="max-w-lg space-y-6">
+    <div className="mx-auto max-w-lg space-y-6">
       <Link
         href="/account"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
