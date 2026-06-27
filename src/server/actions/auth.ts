@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs"
 
 import { signUpSchema } from "@/lib/validations/auth"
+import { signOut } from "@/server/auth"
 import { db } from "@/server/db"
 
 type RegisterResult = { success: true } | { success: false; error: string }
@@ -32,4 +33,8 @@ export async function registerUser(input: unknown): Promise<RegisterResult> {
   })
 
   return { success: true }
+}
+
+export async function signOutAction() {
+  await signOut({ redirectTo: "/login" })
 }

@@ -15,7 +15,7 @@ import { signInSchema, type SignInInput } from "@/lib/validations/auth"
 export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/"
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
   const [isPending, startTransition] = useTransition()
   const {
     register,

@@ -7,3 +7,5 @@ export const siteConfig = {
 } as const
 
 export type SiteConfig = typeof siteConfig
+
+export const ACTIVE_TENANT_COOKIE = "slotly_active_tenant"

@@ -45,7 +45,7 @@ export function RegisterForm() {
       }
 
       toast.success("Welcome to Slotly!")
-      router.push("/")
+      router.push("/dashboard")
       router.refresh()
     })
   }
