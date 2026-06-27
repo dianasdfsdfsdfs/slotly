@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs"
 
 import { signUpSchema } from "@/lib/validations/auth"
-import { signOut } from "@/server/auth"
+import { auth, signOut } from "@/server/auth"
 import { db } from "@/server/db"
 
 type RegisterResult = { success: true } | { success: false; error: string }
@@ -37,4 +37,14 @@ export async function registerUser(input: unknown): Promise<RegisterResult> {
 
 export async function signOutAction() {
   await signOut({ redirectTo: "/login" })
+}
+
+// After login/registration: owners/staff -> dashboard, plain customers -> account.
+export async function getPostLoginPath(): Promise<string> {
+  const session = await auth()
+  if (!session?.user?.id) return "/login"
+  const memberships = await db.membership.count({
+    where: { userId: session.user.id },
+  })
+  return memberships > 0 ? "/dashboard" : "/account"
 }

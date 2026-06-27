@@ -185,3 +185,42 @@ export async function createBooking(input: unknown): Promise<CreateResult> {
     }
   }
 }
+
+type CancelResult = { success: true } | { success: false; error: string }
+
+export async function cancelBooking(bookingId: string): Promise<CancelResult> {
+  const session = await auth()
+  if (!session?.user?.id) return { success: false, error: "Please sign in." }
+
+  const booking = await db.booking.findUnique({
+    where: { id: bookingId },
+    select: { id: true, customerId: true, tenantId: true, status: true },
+  })
+  if (!booking) return { success: false, error: "Booking not found." }
+
+  let allowed = booking.customerId === session.user.id
+  if (!allowed) {
+    const membership = await db.membership.findUnique({
+      where: {
+        userId_tenantId: {
+          userId: session.user.id,
+          tenantId: booking.tenantId,
+        },
+      },
+    })
+    allowed = membership?.role === "OWNER"
+  }
+  if (!allowed)
+    return { success: false, error: "You can't cancel this booking." }
+
+  if (booking.status !== "CANCELLED") {
+    await db.booking.update({
+      where: { id: bookingId },
+      data: { status: "CANCELLED" },
+    })
+  }
+
+  revalidatePath("/account")
+  revalidatePath("/dashboard/bookings")
+  return { success: true }
+}

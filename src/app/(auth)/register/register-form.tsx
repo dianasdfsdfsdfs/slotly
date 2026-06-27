@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signUpSchema, type SignUpInput } from "@/lib/validations/auth"
-import { registerUser } from "@/server/actions/auth"
+import { getPostLoginPath, registerUser } from "@/server/actions/auth"
 
 export function RegisterForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl")
   const [isPending, startTransition] = useTransition()
   const {
     register,
@@ -45,7 +47,7 @@ export function RegisterForm() {
       }
 
       toast.success("Welcome to Slotly!")
-      router.push("/dashboard")
+      router.push(callbackUrl ?? (await getPostLoginPath()))
       router.refresh()
     })
   }

@@ -1,5 +1,6 @@
 import { type Metadata } from "next"
 import Link from "next/link"
+import { Suspense } from "react"
 
 import { RegisterForm } from "./register-form"
 
@@ -16,7 +17,9 @@ export default function RegisterPage() {
           Start taking bookings in minutes.
         </p>
       </div>
-      <RegisterForm />
+      <Suspense>
+        <RegisterForm />
+      </Suspense>
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link href="/login" className="text-emerald-400 hover:underline">

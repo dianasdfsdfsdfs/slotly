@@ -1,19 +1,24 @@
 import { type Metadata } from "next"
+import Link from "next/link"
+import { redirect } from "next/navigation"
 
 import { CancelBookingButton } from "@/components/booking/cancel-booking-button"
 import { BookingStatusBadge } from "@/components/booking/status-badge"
+import { buttonVariants } from "@/components/ui/button"
 import { formatDateTime, formatPrice } from "@/lib/format"
+import { cn } from "@/lib/utils"
+import { auth } from "@/server/auth"
 import { db } from "@/server/db"
-import { getOwnerDashboardContext } from "@/server/tenant"
 
-export const metadata: Metadata = { title: "Bookings" }
+export const metadata: Metadata = { title: "My bookings" }
 
-export default async function BookingsPage() {
-  const { tenant } = await getOwnerDashboardContext()
+export default async function AccountPage() {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/login")
 
   const bookings = await db.booking.findMany({
-    where: { tenantId: tenant.id },
-    include: { service: true, staff: true },
+    where: { customerId: session.user.id },
+    include: { service: true, staff: true, tenant: true },
     orderBy: { startAt: "desc" },
   })
 
@@ -27,18 +32,21 @@ export default async function BookingsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Bookings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Everything booked at {tenant.name}.
-        </p>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight">My bookings</h1>
+        <Link
+          href="/account/settings"
+          className={cn(buttonVariants({ variant: "outline" }), "h-9")}
+        >
+          Settings
+        </Link>
       </div>
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground">Upcoming</h2>
         {upcoming.length === 0 ? (
           <div className="card p-8 text-center text-sm text-muted-foreground">
-            No upcoming bookings yet.
+            No upcoming bookings.
           </div>
         ) : (
           <ul className="space-y-2">
@@ -48,17 +56,21 @@ export default async function BookingsPage() {
                 className="card flex flex-wrap items-center gap-4 p-4"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">{b.customerName}</p>
+                  <p className="font-medium">
+                    {b.service.name}
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · {b.tenant.name}
+                    </span>
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    {b.service.name} · with {b.staff.displayName}
+                    {formatDateTime(b.startAt, b.tenant.timezone)} · with{" "}
+                    {b.staff.displayName}
                   </p>
                 </div>
-                <div className="text-right text-sm">
-                  <p>{formatDateTime(b.startAt, tenant.timezone)}</p>
-                  <p className="text-muted-foreground">
-                    {formatPrice(b.priceCents)}
-                  </p>
-                </div>
+                <span className="text-sm font-medium">
+                  {formatPrice(b.priceCents)}
+                </span>
                 <CancelBookingButton bookingId={b.id} />
               </li>
             ))}
@@ -78,14 +90,18 @@ export default async function BookingsPage() {
                 className="card flex flex-wrap items-center gap-4 p-4"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">{b.customerName}</p>
+                  <p className="font-medium">
+                    {b.service.name}
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · {b.tenant.name}
+                    </span>
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    {b.service.name} · with {b.staff.displayName}
+                    {formatDateTime(b.startAt, b.tenant.timezone)} · with{" "}
+                    {b.staff.displayName}
                   </p>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {formatDateTime(b.startAt, tenant.timezone)}
-                </span>
                 <BookingStatusBadge status={b.status} />
               </li>
             ))}

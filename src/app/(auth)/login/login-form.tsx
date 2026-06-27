@@ -11,11 +11,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signInSchema, type SignInInput } from "@/lib/validations/auth"
+import { getPostLoginPath } from "@/server/actions/auth"
 
 export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
+  const callbackUrl = searchParams.get("callbackUrl")
   const [isPending, startTransition] = useTransition()
   const {
     register,
@@ -39,7 +40,7 @@ export function LoginForm() {
       }
 
       toast.success("Welcome back!")
-      router.push(callbackUrl)
+      router.push(callbackUrl ?? (await getPostLoginPath()))
       router.refresh()
     })
   }

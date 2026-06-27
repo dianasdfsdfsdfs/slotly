@@ -35,3 +35,15 @@ export function timeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number)
   return h * 60 + m
 }
+
+/** Human date+time in a specific timezone, e.g. "Mon, Jun 30, 02:30 PM". */
+export function formatDateTime(date: Date, timeZone: string): string {
+  return date.toLocaleString("en-US", {
+    timeZone,
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
