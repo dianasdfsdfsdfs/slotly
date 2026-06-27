@@ -95,7 +95,7 @@ export default async function DashboardOverviewPage() {
             <Link
               key={stat.label}
               href={stat.href}
-              className="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-br from-white/[0.05] to-transparent p-5 transition-all hover:border-emerald-500/30 hover:from-emerald-500/[0.07]"
+              className="group card card-interactive relative overflow-hidden p-5"
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
@@ -117,7 +117,7 @@ export default async function DashboardOverviewPage() {
         })}
       </div>
 
-      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-6">
+      <div className="card p-6">
         <h2 className="font-medium">Get set up</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Finish these steps to start taking bookings.

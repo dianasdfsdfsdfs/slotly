@@ -1,6 +1,6 @@
 import { type Metadata } from "next"
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, Scissors } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { formatDuration, formatPrice } from "@/lib/format"
@@ -35,8 +35,11 @@ export default async function ServicesPage() {
       </div>
 
       {services.length === 0 ? (
-        <div className="glass flex min-h-60 flex-col items-center justify-center rounded-xl p-10 text-center">
-          <p className="text-sm text-muted-foreground">No services yet.</p>
+        <div className="card flex min-h-60 flex-col items-center justify-center p-10 text-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-300">
+            <Scissors className="size-5" />
+          </span>
+          <p className="mt-4 text-sm text-muted-foreground">No services yet.</p>
           <Link
             href="/dashboard/services/new"
             className={cn(buttonVariants({ variant: "outline" }), "mt-4 h-9")}
@@ -50,7 +53,7 @@ export default async function ServicesPage() {
             <Link
               key={service.id}
               href={`/dashboard/services/${service.id}`}
-              className="glass block rounded-xl p-4 transition-colors hover:border-emerald-500/30"
+              className="group card card-interactive block p-4"
             >
               <div className="flex items-center gap-2">
                 <span

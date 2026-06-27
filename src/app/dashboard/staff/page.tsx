@@ -1,6 +1,6 @@
 import { type Metadata } from "next"
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, Users } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { buttonVariants } from "@/components/ui/button"
@@ -40,8 +40,11 @@ export default async function StaffPage() {
       </div>
 
       {staff.length === 0 ? (
-        <div className="glass flex min-h-60 flex-col items-center justify-center rounded-xl p-10 text-center">
-          <p className="text-sm text-muted-foreground">No staff yet.</p>
+        <div className="card flex min-h-60 flex-col items-center justify-center p-10 text-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-300">
+            <Users className="size-5" />
+          </span>
+          <p className="mt-4 text-sm text-muted-foreground">No staff yet.</p>
           <Link
             href="/dashboard/staff/new"
             className={cn(buttonVariants({ variant: "outline" }), "mt-4 h-9")}
@@ -55,7 +58,7 @@ export default async function StaffPage() {
             <Link
               key={member.id}
               href={`/dashboard/staff/${member.id}`}
-              className="glass flex items-center gap-3 rounded-xl p-4 transition-colors hover:border-emerald-500/30"
+              className="group card card-interactive flex items-center gap-3 p-4"
             >
               <Avatar className="size-10">
                 <AvatarFallback className="bg-emerald-500/15 text-sm text-emerald-300">

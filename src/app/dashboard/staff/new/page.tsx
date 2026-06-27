@@ -11,7 +11,7 @@ export default async function NewStaffPage() {
   return (
     <div className="max-w-xl space-y-6">
       <h1 className="text-2xl font-semibold">New staff member</h1>
-      <div className="glass rounded-xl p-6">
+      <div className="card p-6">
         <StaffForm mode="create" />
       </div>
     </div>

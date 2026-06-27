@@ -23,7 +23,13 @@ export default async function DashboardLayout({
             name: m.tenant.name,
           }))}
         />
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="relative flex-1 overflow-hidden p-6 lg:p-8">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-24 right-0 h-[420px] w-[520px] rounded-full bg-emerald-500/[0.06] blur-[130px]"
+          />
+          <div className="animate-rise relative">{children}</div>
+        </main>
       </div>
     </div>
   )

@@ -45,7 +45,7 @@ export default async function StaffDetailPage({
 
       <h1 className="text-2xl font-semibold">{staff.displayName}</h1>
 
-      <section className="glass space-y-4 rounded-xl p-6">
+      <section className="card space-y-4 p-6">
         <h2 className="font-medium">Profile</h2>
         <StaffForm
           mode="edit"
@@ -58,7 +58,7 @@ export default async function StaffDetailPage({
         />
       </section>
 
-      <section className="glass space-y-4 rounded-xl p-6">
+      <section className="card space-y-4 p-6">
         <h2 className="font-medium">Services offered</h2>
         <StaffServices
           staffId={staff.id}
@@ -67,7 +67,7 @@ export default async function StaffDetailPage({
         />
       </section>
 
-      <section className="glass space-y-4 rounded-xl p-6">
+      <section className="card space-y-4 p-6">
         <div>
           <h2 className="font-medium">Working hours</h2>
           <p className="mt-1 text-sm text-muted-foreground">

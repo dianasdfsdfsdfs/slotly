@@ -92,7 +92,7 @@ export function ServiceForm(props: Props) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="glass max-w-xl space-y-5 rounded-xl p-6"
+      className="card max-w-xl space-y-5 p-6"
     >
       <div className="space-y-1.5">
         <Label htmlFor="name">Name</Label>
