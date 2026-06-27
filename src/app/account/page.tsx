@@ -30,6 +30,10 @@ export default async function AccountPage() {
     (b) => !(b.status !== "CANCELLED" && b.startAt > now)
   )
 
+  const memberships = await db.membership.count({
+    where: { userId: session.user.id },
+  })
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
@@ -41,6 +45,20 @@ export default async function AccountPage() {
           Settings
         </Link>
       </div>
+
+      {memberships === 0 && (
+        <div className="card flex flex-wrap items-center justify-between gap-4 p-4">
+          <div>
+            <p className="font-medium">Run a business?</p>
+            <p className="text-sm text-muted-foreground">
+              Create your own booking page on Slotly.
+            </p>
+          </div>
+          <Link href="/onboarding" className={cn(buttonVariants(), "h-9")}>
+            Create business
+          </Link>
+        </div>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground">Upcoming</h2>
