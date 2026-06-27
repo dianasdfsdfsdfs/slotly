@@ -32,8 +32,8 @@ function getDefaultTimezone(): string {
 
 export function OnboardingForm() {
   const [isPending, startTransition] = useTransition()
-  const timezones = useMemo(getTimezones, [])
-  const defaultTimezone = useMemo(getDefaultTimezone, [])
+  const timezones = useMemo(() => getTimezones(), [])
+  const defaultTimezone = useMemo(() => getDefaultTimezone(), [])
 
   const {
     register,
