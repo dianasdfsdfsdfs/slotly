@@ -76,11 +76,23 @@ export default async function DashboardOverviewPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back{firstName ? `, ${firstName}` : ""}
+          <p className="font-mono text-xs tracking-widest text-emerald-300/80 uppercase">
+            Dashboard
+          </p>
+          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight">
+            Welcome back
+            {firstName && (
+              <>
+                ,{" "}
+                <span className="bg-gradient-to-r from-emerald-300 to-teal-400 bg-clip-text text-transparent">
+                  {firstName}
+                </span>
+              </>
+            )}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Here&apos;s what&apos;s happening at {tenant.name}.
+          <p className="mt-2 text-sm text-muted-foreground">
+            Here&apos;s what&apos;s happening at{" "}
+            <span className="font-medium text-foreground">{tenant.name}</span>.
           </p>
         </div>
         <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
