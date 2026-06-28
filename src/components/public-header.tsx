@@ -1,6 +1,8 @@
 import Link from "next/link"
 
+import { buttonVariants } from "@/components/ui/button"
 import { siteConfig } from "@/lib/constants"
+import { cn } from "@/lib/utils"
 import { signOutAction } from "@/server/actions/auth"
 
 export function PublicHeader({ isAuthed }: { isAuthed: boolean }) {
@@ -15,27 +17,24 @@ export function PublicHeader({ isAuthed }: { isAuthed: boolean }) {
           {siteConfig.name}
         </Link>
         {isAuthed ? (
-          <div className="flex items-center gap-4 text-sm">
-            <Link
-              href="/account"
-              className="text-muted-foreground hover:text-foreground"
-            >
+          <div className="flex items-center gap-2">
+            <Link href="/account" className={cn(buttonVariants(), "h-8 px-3")}>
               My bookings
             </Link>
             <form action={signOutAction}>
               <button
                 type="submit"
-                className="text-muted-foreground hover:text-foreground"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-8 px-3"
+                )}
               >
                 Sign out
               </button>
             </form>
           </div>
         ) : (
-          <Link
-            href="/login"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
+          <Link href="/login" className={cn(buttonVariants(), "h-8 px-3")}>
             Sign in
           </Link>
         )}
