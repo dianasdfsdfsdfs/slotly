@@ -4,9 +4,14 @@ import { TZDate } from "@date-fns/tz"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
+import { formatDateTime, formatPrice } from "@/lib/format"
 import { getAvailableSlots } from "@/server/availability"
 import { auth } from "@/server/auth"
 import { db } from "@/server/db"
+import {
+  sendBookingCancellation,
+  sendBookingConfirmation,
+} from "@/server/email"
 
 export type SlotOption = { start: string; staffId: string }
 
@@ -163,6 +168,17 @@ export async function createBooking(input: unknown): Promise<CreateResult> {
     })
 
     revalidatePath(`/book/${tenant.slug}`)
+
+    await sendBookingConfirmation({
+      to: user.email ?? "",
+      customerName: user.name ?? "Customer",
+      businessName: tenant.name,
+      serviceName: service.name,
+      staffName: staff.displayName,
+      whenText: formatDateTime(start, tenant.timezone),
+      priceText: formatPrice(service.priceCents),
+    })
+
     return { ok: true, bookingId: booking.id, slug: tenant.slug }
   } catch (error) {
     // GiST exclusion constraint (Booking_no_overlap) -> someone booked it first.
@@ -194,7 +210,17 @@ export async function cancelBooking(bookingId: string): Promise<CancelResult> {
 
   const booking = await db.booking.findUnique({
     where: { id: bookingId },
-    select: { id: true, customerId: true, tenantId: true, status: true },
+    select: {
+      id: true,
+      customerId: true,
+      tenantId: true,
+      status: true,
+      customerName: true,
+      customerEmail: true,
+      startAt: true,
+      service: { select: { name: true } },
+      tenant: { select: { name: true, timezone: true } },
+    },
   })
   if (!booking) return { success: false, error: "Booking not found." }
 
@@ -217,6 +243,14 @@ export async function cancelBooking(bookingId: string): Promise<CancelResult> {
     await db.booking.update({
       where: { id: bookingId },
       data: { status: "CANCELLED" },
+    })
+
+    await sendBookingCancellation({
+      to: booking.customerEmail,
+      customerName: booking.customerName,
+      businessName: booking.tenant.name,
+      serviceName: booking.service.name,
+      whenText: formatDateTime(booking.startAt, booking.tenant.timezone),
     })
   }
 
