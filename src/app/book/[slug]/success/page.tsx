@@ -3,6 +3,7 @@ import { type Metadata } from "next"
 import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 
+import { PublicHeader } from "@/components/public-header"
 import { buttonVariants } from "@/components/ui/button"
 import { formatDuration, formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -44,46 +45,49 @@ export default async function BookingSuccessPage({
   })
 
   return (
-    <main className="relative mx-auto flex min-h-svh w-full max-w-md flex-col items-center justify-center px-4 py-10 text-center">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-10 left-1/2 h-[300px] w-[420px] -translate-x-1/2 rounded-full bg-emerald-500/15 blur-[120px]"
-      />
-      <div className="relative flex flex-col items-center">
-        <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
-          <CheckCircle2 className="size-8" />
-        </span>
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-          Booking confirmed
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          See you soon at {booking.tenant.name}.
-        </p>
+    <div className="flex min-h-svh flex-1 flex-col">
+      <PublicHeader isAuthed />
+      <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 py-10 text-center">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-10 left-1/2 h-[300px] w-[420px] -translate-x-1/2 rounded-full bg-emerald-500/15 blur-[120px]"
+        />
+        <div className="relative flex flex-col items-center">
+          <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+            <CheckCircle2 className="size-8" />
+          </span>
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">
+            Booking confirmed
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            See you soon at {booking.tenant.name}.
+          </p>
 
-        <dl className="card mt-6 w-full divide-y divide-white/10 px-4 text-left text-sm">
-          <Row label="Service" value={booking.service.name} />
-          <Row label="With" value={booking.staff.displayName} />
-          <Row label="When" value={when} />
-          <Row
-            label="Duration"
-            value={formatDuration(booking.service.durationMinutes)}
-          />
-          <Row label="Price" value={formatPrice(booking.priceCents)} />
-        </dl>
+          <dl className="card mt-6 w-full divide-y divide-white/10 px-4 text-left text-sm">
+            <Row label="Service" value={booking.service.name} />
+            <Row label="With" value={booking.staff.displayName} />
+            <Row label="When" value={when} />
+            <Row
+              label="Duration"
+              value={formatDuration(booking.service.durationMinutes)}
+            />
+            <Row label="Price" value={formatPrice(booking.priceCents)} />
+          </dl>
 
-        <div className="mt-6 flex w-full flex-col gap-2">
-          <Link
-            href={`/book/${slug}`}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "h-10 w-full"
-            )}
-          >
-            Book another appointment
-          </Link>
+          <div className="mt-6 flex w-full flex-col gap-2">
+            <Link
+              href={`/book/${slug}`}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-10 w-full"
+              )}
+            >
+              Book another appointment
+            </Link>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
 

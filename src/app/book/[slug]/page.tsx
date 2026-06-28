@@ -3,6 +3,7 @@ import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { BookingWizard } from "@/components/booking/booking-wizard"
+import { PublicHeader } from "@/components/public-header"
 import { auth } from "@/server/auth"
 import { db } from "@/server/db"
 
@@ -74,39 +75,42 @@ export default async function BookPage({
   const dates = buildDates(tenant.timezone)
 
   return (
-    <main className="relative mx-auto min-h-svh w-full max-w-2xl px-4 py-10">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 h-[360px] w-[560px] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[130px]"
-      />
-      <header className="relative mb-8 text-center">
-        <p className="font-mono text-xs tracking-widest text-emerald-300/80 uppercase">
-          Book an appointment
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          {tenant.name}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Choose a service and a time that works for you.
-        </p>
-      </header>
-
-      {bookableServices.length === 0 ? (
-        <div className="card p-10 text-center text-sm text-muted-foreground">
-          This business isn&apos;t taking online bookings yet.
-        </div>
-      ) : (
-        <BookingWizard
-          tenant={{
-            id: tenant.id,
-            slug: tenant.slug,
-            timezone: tenant.timezone,
-          }}
-          services={bookableServices}
-          dates={dates}
-          isAuthed={Boolean(session?.user?.id)}
+    <div className="flex min-h-svh flex-1 flex-col">
+      <PublicHeader isAuthed={Boolean(session?.user?.id)} />
+      <main className="relative mx-auto w-full max-w-2xl flex-1 px-4 py-10">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-32 left-1/2 h-[360px] w-[560px] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[130px]"
         />
-      )}
-    </main>
+        <header className="relative mb-8 text-center">
+          <p className="font-mono text-xs tracking-widest text-emerald-300/80 uppercase">
+            Book an appointment
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            {tenant.name}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Choose a service and a time that works for you.
+          </p>
+        </header>
+
+        {bookableServices.length === 0 ? (
+          <div className="card p-10 text-center text-sm text-muted-foreground">
+            This business isn&apos;t taking online bookings yet.
+          </div>
+        ) : (
+          <BookingWizard
+            tenant={{
+              id: tenant.id,
+              slug: tenant.slug,
+              timezone: tenant.timezone,
+            }}
+            services={bookableServices}
+            dates={dates}
+            isAuthed={Boolean(session?.user?.id)}
+          />
+        )}
+      </main>
+    </div>
   )
 }
