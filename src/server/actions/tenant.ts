@@ -6,9 +6,13 @@ import { redirect } from "next/navigation"
 
 import { ACTIVE_TENANT_COOKIE } from "@/lib/constants"
 import { slugify } from "@/lib/slug"
-import { createTenantSchema } from "@/lib/validations/tenant"
+import {
+  createTenantSchema,
+  tenantSettingsSchema,
+} from "@/lib/validations/tenant"
 import { auth } from "@/server/auth"
 import { db } from "@/server/db"
+import { getOwnerContext } from "@/server/tenant"
 
 type ActionError = { success: false; error: string }
 
@@ -74,4 +78,36 @@ export async function setActiveTenant(tenantId: string) {
   setActiveTenantCookie(cookieStore, tenantId)
 
   revalidatePath("/dashboard")
+}
+
+export async function updateTenantSettings(
+  input: unknown
+): Promise<{ success: true } | { success: false; error: string }> {
+  const ctx = await getOwnerContext()
+  if (!ctx) return { success: false, error: "You are not authorized." }
+
+  const parsed = tenantSettingsSchema.safeParse(input)
+  if (!parsed.success) {
+    return { success: false, error: "Please check the form and try again." }
+  }
+
+  const { name, timezone, slotStepMinutes, bufferMinutes } = parsed.data
+  const slug = slugify(parsed.data.slug) || "business"
+
+  const clash = await db.tenant.findFirst({
+    where: { slug, NOT: { id: ctx.tenant.id } },
+    select: { id: true },
+  })
+  if (clash) {
+    return { success: false, error: "That booking link is taken. Try another." }
+  }
+
+  await db.tenant.update({
+    where: { id: ctx.tenant.id },
+    data: { name, slug, timezone, slotStepMinutes, bufferMinutes },
+  })
+
+  revalidatePath("/dashboard/settings")
+  revalidatePath("/dashboard")
+  return { success: true }
 }
