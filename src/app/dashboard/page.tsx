@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+import { BookingLink } from "@/components/dashboard/booking-link"
 import { cn } from "@/lib/utils"
 import { db } from "@/server/db"
 import { getDashboardContext } from "@/server/tenant"
@@ -25,6 +26,7 @@ export default async function DashboardOverviewPage() {
   ])
 
   const firstName = user.name?.split(" ")[0]
+  const baseUrl = process.env.AUTH_URL ?? "http://localhost:3000"
 
   const stats = [
     {
@@ -65,9 +67,9 @@ export default async function DashboardOverviewPage() {
     },
     {
       label: "Share your booking page",
-      hint: "Coming soon",
+      hint: "Copy your link and send it to clients",
       icon: Globe,
-      href: null,
+      href: "/dashboard/settings",
       done: false,
     },
   ]
@@ -98,6 +100,23 @@ export default async function DashboardOverviewPage() {
         <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
           {tenant.plan} plan
         </span>
+      </div>
+
+      <div className="card relative overflow-hidden p-5">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-emerald-500/10 blur-3xl"
+        />
+        <div className="relative">
+          <p className="font-medium">Your booking page</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Share this link with clients — they pick a service and time, you get
+            the booking.
+          </p>
+          <div className="mt-3">
+            <BookingLink url={`${baseUrl}/book/${tenant.slug}`} />
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
