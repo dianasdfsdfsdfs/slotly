@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Slotly
 
-## Getting Started
+A multi-tenant booking SaaS for service businesses (salons, studios, clinics,
+independent pros). Each business gets a dashboard and a public booking page;
+clients pick a service, a staff member and a time, and book online.
 
-First, run the development server:
+Built as a full-stack portfolio project.
+
+## Features
+
+- **Multi-tenancy & RBAC** — businesses sign up, get isolated data and an
+  Owner/Staff membership model.
+- **Public booking page** (`/book/[slug]`) — a 4-step wizard: service → staff
+  (or “any available”) → date/slot → confirm.
+- **Availability engine** — generates real slots from each staff member's
+  weekly working hours, time off and existing bookings, with buffers and
+  timezone-correct math (`@date-fns/tz`).
+- **No double-booking** — enforced at the database level with a PostgreSQL GiST
+  exclusion constraint (`btree_gist` + `tsrange`).
+- **Auth** — Auth.js (NextAuth v5), email/password with JWT sessions.
+- **Customer cabinet** — clients see and cancel their bookings.
+- **Transactional email** — booking confirmation & cancellation via Resend +
+  React Email.
+- **Subscriptions** — Stripe Checkout + Customer Portal, Free/Pro plans with
+  plan-gated limits, kept in sync via webhooks.
+- **Dark, modern UI** — Tailwind v4 + shadcn/ui (Base UI), emerald accent.
+
+## Tech stack
+
+- **Next.js 16** (App Router, Server Components, Server Actions) + **TypeScript**
+- **Tailwind CSS v4** + **shadcn/ui**
+- **Prisma 7** + **PostgreSQL** (Neon) via a `pg` driver adapter
+- **Auth.js v5**, **Stripe**, **Resend** + **React Email**
+- **Vitest** for unit tests, **GitHub Actions** for CI
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env   # then fill in the values
+npx prisma migrate dev # create tables
+npm run db:seed        # optional: demo business at /book/demo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [`.env.example`](./.env.example). You need a Neon database, an Auth secret
+(`npx auth secret`), and (optionally) Resend and Stripe keys. Run
+`npm run stripe:setup` to create the Pro price in your Stripe account.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Script                       | Purpose                             |
+| ---------------------------- | ----------------------------------- |
+| `npm run dev`                | Start the dev server                |
+| `npm run build` / `start`    | Production build / serve            |
+| `npm test`                   | Run Vitest unit tests               |
+| `npm run lint` / `typecheck` | Lint / type-check                   |
+| `npm run db:seed`            | Seed a demo business                |
+| `npm run stripe:setup`       | Create the Stripe Pro product/price |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploys to **Vercel**. On Vercel the `vercel-build` script runs
+`prisma migrate deploy` before building, so the production database stays in
+sync. Set all variables from `.env.example` in the Vercel project, plus
+`AUTH_URL` (your production URL) and the production `STRIPE_WEBHOOK_SECRET`
+(from a Stripe webhook pointing at `/api/stripe/webhook`).

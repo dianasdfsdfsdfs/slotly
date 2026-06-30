@@ -3,6 +3,9 @@ import type { NextAuthConfig } from "next-auth"
 // Edge-safe base config (no Prisma / bcrypt). Shared by the full auth instance
 // (src/server/auth.ts) and the middleware instance (src/middleware.ts).
 export const authConfig = {
+  // Trust the deployment host (Vercel/custom domain) so Auth.js doesn't reject
+  // requests with UntrustedHost in production.
+  trustHost: true,
   pages: {
     signIn: "/login",
   },
