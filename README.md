@@ -6,8 +6,12 @@ clients pick a service, a staff member and a time, and book online.
 
 Built as a full-stack portfolio project.
 
-**🔗 Live demo:** https://slotly-taupe.vercel.app — try the public booking flow at
-[`/book/demo`](https://slotly-taupe.vercel.app/book/demo).
+**🔗 Live site: [slotly-taupe.vercel.app](https://slotly-taupe.vercel.app)**
+
+Try the public booking page at
+[/book/demo](https://slotly-taupe.vercel.app/book/demo), or sign in to the
+business dashboard with the seeded demo account **`owner@demo.slotly`** /
+**`demo1234`**.
 
 ## Features
 
