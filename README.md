@@ -6,6 +6,9 @@ clients pick a service, a staff member and a time, and book online.
 
 Built as a full-stack portfolio project.
 
+**🔗 Live demo:** https://slotly-taupe.vercel.app — try the public booking flow at
+[`/book/demo`](https://slotly-taupe.vercel.app/book/demo).
+
 ## Features
 
 - **Multi-tenancy & RBAC** — businesses sign up, get isolated data and an
